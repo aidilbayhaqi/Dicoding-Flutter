@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 250,
+              height: MediaQuery.of(context).size.height * 0.3,
               decoration: const BoxDecoration(
                   image: DecorationImage(
                 image: NetworkImage('images/sepatu-5.jpg'),
@@ -107,7 +107,7 @@ class ShoesResult extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+              crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
               childAspectRatio: 0.7,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
@@ -127,7 +127,7 @@ class ShoesResult extends StatelessWidget {
                     ClipRRect(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(15)),
-                      child: Image.network(shoes.image,
+                      child: Image.asset(shoes.image,
                           height: 120, fit: BoxFit.cover),
                     ),
                     Padding(

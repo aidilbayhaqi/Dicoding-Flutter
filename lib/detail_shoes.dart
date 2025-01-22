@@ -13,47 +13,100 @@ class DetailShoes extends StatelessWidget {
         title: Text(shoes.name),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Image.network(shoes.image),
-            const SizedBox(height: 16.0),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                shoes.name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
+          child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: MediaQuery.of(context).size.width >= 600
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    shoes.image,
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(
+                      width: 16.0), 
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          shoes.name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 32.0),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          'Rp. ${shoes.price}',
+                          style: TextStyle(
+                              fontSize: 24.0, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Row(
+                          children: List.generate(5, (index) {
+                            return Icon(
+                              index < shoes.rate
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: Colors.amber,
+                              size: 20,
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 16.0),
+                        Text(
+                          shoes.description,
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Image.asset(shoes.image),
+                  const SizedBox(height: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      shoes.name,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 32.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      'Rp. ${shoes.price}',
+                      style: TextStyle(
+                          fontSize: 24.0, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: List.generate(5, (index) {
+                        return Icon(
+                          index < shoes.rate ? Icons.star : Icons.star_border,
+                          color: Colors.amber,
+                          size: 20,
+                        );
+                      }),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      shoes.description,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Rp. ${shoes.price}',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: List.generate(5, (index) {
-                  return Icon(
-                    index < shoes.rate ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                    size: 20,
-                  );
-                }),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                shoes.description,
-                style: TextStyle(fontSize: 16.0),
-              ),
-            ),
-          ],
-        ),
-      ),
+      )),
       bottomNavigationBar: Container(
         color: Colors.white,
         child: Row(
@@ -72,7 +125,7 @@ class DetailShoes extends StatelessWidget {
                       color: Colors.black),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green, 
+                  backgroundColor: Colors.green,
                   padding: EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,
@@ -103,7 +156,7 @@ class DetailShoes extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
               ),
               Text(
-                'Jumlah Produk ${shoes.stock='1'}',
+                'Jumlah Produk ${shoes.stock = '1'}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
               ),
             ],
@@ -111,7 +164,7 @@ class DetailShoes extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
               child: Text('Batal'),
             ),
