@@ -15,8 +15,8 @@ class HomePage extends StatelessWidget {
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 23.0, color: Colors.white),
         ),
-        actions: [
-          const PersonButton(),
+        actions: const [
+          PersonButton(),
         ],
       ),
       body: SingleChildScrollView(
@@ -25,21 +25,20 @@ class HomePage extends StatelessWidget {
             Container(
               height: MediaQuery.of(context).size.height * 0.3,
               decoration: const BoxDecoration(
-                  image: DecorationImage(
-                image: NetworkImage('images/sepatu-5.jpg'),
-                fit: BoxFit.cover,
-              )),
-              child: Center(
-                child: Container(
-                  child: const Text(
-                    "Selamat Datang di Shoes Ecommerce",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
+                image: DecorationImage(
+                  image: AssetImage('images/sepatu-5.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: const Center(
+                child: Text(
+                  "Selamat Datang di Shoes Ecommerce",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -69,10 +68,10 @@ class _SearchShoesState extends State<SearchShoes> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Cari Sepatu',
               border: OutlineInputBorder(),
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(Icons.search),
             ),
             onChanged: (value) {
               setState(() {
@@ -98,93 +97,95 @@ class ShoesResult extends StatelessWidget {
     final filteredShoes = ShoesInfoList.where((shoe) =>
         shoe.name.toLowerCase().contains(searchQuery.toLowerCase())).toList();
 
-    return Column(
-      children: [
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.all(8.8),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
-              childAspectRatio: 0.7,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemCount: filteredShoes.length,
-            itemBuilder: (context, index) {
-              final ShoesInfo shoes = filteredShoes[index];
+    final screenWidth = MediaQuery.of(context).size.width;
 
-              return InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return DetailShoes(shoes: shoes);
-                  }));
-                },
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(15)),
-                      child: Image.asset(shoes.image,
-                          height: 120, fit: BoxFit.cover),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            shoes.name,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          const SizedBox(height: 4),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Rp. ${shoes.price}',
-                        style:
-                            const TextStyle(fontSize: 18, color: Colors.black),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: List.generate(5, (index) {
-                          return Icon(
-                            index < shoes.rate ? Icons.star : Icons.star_border,
-                            color: Colors.amber,
-                            size: 16,
-                          );
-                        }),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const FavoriteButton(),
-                          IconButton(
-                              onPressed: () {
-                              },
-                              icon: const Icon(Icons.share)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
+    int crossAxisCount;
+    if (screenWidth <= 600) {
+      crossAxisCount = 2;
+    } else if (screenWidth <= 900) {
+      crossAxisCount = 3;
+    } else {
+      crossAxisCount = 4;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          childAspectRatio: 0.7,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemCount: filteredShoes.length,
+        itemBuilder: (context, index) {
+          final ShoesInfo shoes = filteredShoes[index];
+
+          return InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return DetailShoes(shoes: shoes);
+              }));
             },
-          ),
-        )
-      ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.asset(
+                    shoes.image,
+                    height: 120,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    shoes.name,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Rp. ${shoes.price}',
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index < shoes.rate ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                        size: 16,
+                      );
+                    }),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const FavoriteButton(),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.share),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -202,46 +203,37 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-        icon: isFavorite
-            ? const Icon(Icons.favorite, color: Colors.red)
-            : const Icon(Icons.favorite_border),
-        onPressed: () {
-          setState(() {
-            isFavorite = !isFavorite;
-          });
+      icon: Icon(
+        isFavorite ? Icons.favorite : Icons.favorite_border,
+        color: isFavorite ? Colors.red : Colors.grey,
+      ),
+      onPressed: () {
+        setState(() {
+          isFavorite = !isFavorite;
         });
+      },
+    );
   }
 }
 
-class PersonButton extends StatefulWidget {
+class PersonButton extends StatelessWidget {
   const PersonButton({Key? key}) : super(key: key);
-
-  @override
-  _PersonButtonState createState() => _PersonButtonState();
-}
-
-class _PersonButtonState extends State<PersonButton> {
-  bool isPerson = false;
 
   void _showProfilePopup(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("User  Profile",
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-          content: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text("Nama: John Doe",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const Text("Email: johndoe@example.com",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
+          title: const Text(
+            "User Profile",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Text("Nama: John Doe"),
+              Text("Email: johndoe@example.com"),
+            ],
           ),
           actions: [
             TextButton(
@@ -259,15 +251,8 @@ class _PersonButtonState extends State<PersonButton> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-        icon: const Icon(
-          Icons.person,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          setState(() {
-            isPerson = !isPerson;
-          });
-          _showProfilePopup(context);
-        });
+      icon: const Icon(Icons.person, color: Colors.white),
+      onPressed: () => _showProfilePopup(context),
+    );
   }
 }
