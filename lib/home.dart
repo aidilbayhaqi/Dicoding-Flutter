@@ -1,5 +1,5 @@
-import 'package:ecommerce_mobile/detail_shoes.dart';
 import 'package:flutter/material.dart';
+import 'package:ecommerce_mobile/detail_shoes.dart';
 import 'package:ecommerce_mobile/model/shoes.dart';
 
 class HomePage extends StatelessWidget {
@@ -22,25 +22,30 @@ class HomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('images/sepatu-5.jpg'),
+            Stack(
+              children: [
+                Image.asset(
+                  'images/sepatu-5.jpg',
+                  width: double.infinity,
                   fit: BoxFit.cover,
                 ),
-              ),
-              child: const Center(
-                child: Text(
-                  "Selamat Datang di Shoes Ecommerce",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.4),
+                    child: const Center(
+                      child: Text(
+                        "Selamat Datang di Shoes Ecommerce",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
+              ],
             ),
             const SizedBox(height: 20),
             const SearchShoes(),
@@ -60,6 +65,19 @@ class SearchShoes extends StatefulWidget {
 
 class _SearchShoesState extends State<SearchShoes> {
   String searchQuery = '';
+  bool isLoading = false;
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      isLoading = true;
+    });
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        searchQuery = value;
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +91,13 @@ class _SearchShoesState extends State<SearchShoes> {
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.search),
             ),
-            onChanged: (value) {
-              setState(() {
-                searchQuery = value;
-              });
-            },
+            onChanged: _onSearchChanged,
           ),
         ),
         const SizedBox(height: 20),
-        ShoesResult(searchQuery: searchQuery),
+        isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : ShoesResult(searchQuery: searchQuery),
       ],
     );
   }
@@ -99,93 +115,98 @@ class ShoesResult extends StatelessWidget {
 
     final screenWidth = MediaQuery.of(context).size.width;
 
-    int crossAxisCount;
-    if (screenWidth <= 600) {
-      crossAxisCount = 2;
-    } else if (screenWidth <= 900) {
-      crossAxisCount = 3;
-    } else {
-      crossAxisCount = 4;
-    }
+    int crossAxisCount = screenWidth <= 400
+        ? 1
+        : screenWidth <= 600
+            ? 2
+            : screenWidth <= 900
+                ? 3
+                : 4;
+
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemCount: filteredShoes.length,
-        itemBuilder: (context, index) {
-          final ShoesInfo shoes = filteredShoes[index];
-
-          return InkWell(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return DetailShoes(shoes: shoes);
-              }));
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(
-                    shoes.image,
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    shoes.name,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    'Rp. ${shoes.price}',
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index < shoes.rate ? Icons.star : Icons.star_border,
-                        color: Colors.amber,
-                        size: 16,
-                      );
-                    }),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: filteredShoes.isEmpty
+          ? const Center(child: Text("Tidak ada sepatu ditemukan"))
+          : GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: 0.6,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: filteredShoes.length,
+              itemBuilder: (context, index) {
+                final ShoesInfo shoes = filteredShoes[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return DetailShoes(shoes: shoes);
+                    }));
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const FavoriteButton(),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.share),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image.asset(
+                          shoes.image,
+                          height: 120,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          shoes.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          'Rp. ${shoes.price}',
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          children: List.generate(5, (index) {
+                            return Icon(
+                              index < shoes.rate
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: Colors.amber,
+                              size: 16,
+                            );
+                          }),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const FavoriteButton(),
+                            IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.share),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
